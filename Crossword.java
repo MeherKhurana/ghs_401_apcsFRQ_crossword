@@ -1,62 +1,52 @@
- 
-
-public class Crossword
+public Crossword(boolean[][] blackSquares)
+{
+   int rows = blackSquares.length;
+   int cols = blackSquares[0].length;
+   puzzle = new Square[rows][cols];
+   int label = 1;  // clue numbers start at 1
+   
+   for(int r = 0; r < rows; r++ )
    {
-   private Square[][] puzzle;
-   
-   public Crossword()
+      for( int c = 0; c < cols; c++ )
       {
-      puzzle = new Square[5][5];  
-      for(int row = 0; row < puzzle.length; row++ )
+         if( blackSquares[r][c] )
          {
-         for( int col = 0; col < puzzle[0].length; col++ )
-            {
-            puzzle[row][col] = new Square( true, 0 );    
-            } // end inner for
-         } // end outer for
-         
-         
-      } // end zero-arg constructor
-   
-   public Crossword( boolean[][] blackSquares )
-      {
-          
-          
-      // to be completed in Part (b)
-      
-      
-      
-      } // end one-arg constructor 
-       
-   private boolean toBeLabeled( int r, int c, boolean[][] blackSquares )
-      {
-          
-        
-      
-      return false;    
-      } // end method toBeLabeled
-      
-   public String toString()
-      {
-      String output = new String();
-      
-      for( int row = 0; row < puzzle.length; row++ )
+            // If the value is true, this square is black.
+            puzzle[r][c] = new Square(true, 0);
+         }
+         else
          {
-         for( int col = 0; col < puzzle[0].length; col++ )
+            // White square: check if it should be labeled.
+            if(toBeLabeled(r, c, blackSquares))
             {
-            if( puzzle[row][col].getIsBlack() == true )
-               {
-               output += (char)(9608) + "\t";   // 9608 adds a black square
-               } 
+               puzzle[r][c] = new Square(false, label);
+               label++;   // increment for the next clue
+            }
             else
-               {
-                   output += puzzle[row][col].getNum() + "\t"; //prints number of square
-               
-               } // end else 
-            } // end inner for
-         output += "\n";      
-         } // end outer for
-      return output;  
-      } // end method toString()
-   } // end class Crossword
-   
+            {
+               puzzle[r][c] = new Square(false, 0);
+            }
+         }
+      }
+   }
+}
+
+private boolean toBeLabeled(int r, int c, boolean[][] blackSquares)
+{
+   // If the square itself is black, it won't get a label.
+   if(blackSquares[r][c])
+      return false;
+      
+   // A white square gets a label if:
+   //   - It is in the first row (no square above), or
+   //   - It is in the first column (no square to the left), or
+   //   - The square immediately above is black, or
+   //   - The square immediately to the left is black.
+   if(r == 0 || c == 0)
+      return true;
+      
+   if(blackSquares[r-1][c] || blackSquares[r][c-1])
+      return true;
+      
+   return false;
+}
